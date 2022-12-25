@@ -7,8 +7,7 @@ type UserRouter struct {
 }
 
 func (u UserRouter) UserRouters() {
-	u.Route.Get("/get", func(c *fiber.Ctx) error {
-		return c.JSON("hello there")
-	})
-
+	di := base{}
+	var user = di.UserDI()
+	u.Route.Post("/create", user.CreateUser)
 }
