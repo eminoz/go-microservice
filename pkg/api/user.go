@@ -7,6 +7,7 @@ import (
 
 type UserApi interface {
 	CreateUser(ctx *fiber.Ctx) error
+	GetUser(ctx *fiber.Ctx) error
 }
 type userApi struct {
 	UserService service.UserService
@@ -24,4 +25,8 @@ func (u userApi) CreateUser(ctx *fiber.Ctx) error {
 		return ctx.JSON(err)
 	}
 	return ctx.JSON(response)
+}
+func (u userApi) GetUser(ctx *fiber.Ctx) error {
+	user, _ := u.UserService.GetUser(ctx)
+	return ctx.JSON(user)
 }

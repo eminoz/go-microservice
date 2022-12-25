@@ -9,6 +9,7 @@ import (
 
 type UserService interface {
 	CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError)
+	GetUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError)
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -26,4 +27,9 @@ func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData,
 	responseUser := u.UserRepository.CreateUser(user)
 	return utilities.SuccessDataResult("user created", responseUser), nil
 
+}
+func (u userService) GetUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError) {
+	userId := ctx.Params("id")
+	user := u.UserRepository.GetUserByID(userId)
+	return utilities.SuccessDataResult("user", user), nil
 }
