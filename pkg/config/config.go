@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -15,7 +16,7 @@ type Configuration struct {
 }
 
 func SetupConfig() (err error) {
-	config := godotenv.Load("./config/.env")
+	config := godotenv.Load("./pkg/config/.env")
 	if config != nil {
 		return nil
 	}
@@ -24,6 +25,7 @@ func SetupConfig() (err error) {
 		Port:      os.Getenv("PORT"),
 		AppSecret: os.Getenv("APP_SECRET"),
 	}
+	fmt.Print(configuration.MongoDb)
 	Config = configuration
 	return
 }
