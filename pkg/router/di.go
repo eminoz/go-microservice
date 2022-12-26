@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/eminoz/go-api/broker"
 	"github.com/eminoz/go-api/pkg/api"
+	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/repository"
 	"github.com/eminoz/go-api/pkg/service"
 )

@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/eminoz/go-api/pkg/config"
@@ -26,7 +25,6 @@ func SetDatabase() error {
 	}
 
 	database = client.Database("go-api")
-	fmt.Print("connected successfuly")
 	Database = database
 	return nil
 }

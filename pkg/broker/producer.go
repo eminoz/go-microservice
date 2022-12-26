@@ -1,7 +1,6 @@
 package broker
 
 import (
-	"bytes"
 	"encoding/json"
 	"log"
 
@@ -18,12 +17,12 @@ type userProducer struct{}
 func NewUserProducer() User {
 	return &userProducer{}
 }
-func produce() amqp.Queue {
+func UserProducer() amqp.Queue {
 	ch := Connect()
 	// Declare a queue
 	q, err := ch.QueueDeclare(
 		"createdUser", // name
-		false,         // durable
+		true,          // durable
 		false,         // delete when unused
 		false,         // exclusive
 		false,         // no-wait
@@ -37,22 +36,23 @@ func produce() amqp.Queue {
 }
 func (u userProducer) CreatedUser(user model.User) {
 
-	ch := Connect()
-	q := produce()
-	var buf bytes.Buffer
-	err := json.NewEncoder(&buf).Encode(user)
+	ch := GetBrokerConnection()
+	q := UserProducer()
+
+	jsonData, err := json.Marshal(user)
+
 	if err != nil {
 		log.Fatal("Failed to encode struct:", err)
 	}
 
 	ch.Publish(
-		"usercreated", // exchange
-		q.Name,        // routing key
-		false,         // mandatory
-		false,         // immediate
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
 		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        buf.Bytes(),
+			ContentType: "text/plain",
+			Body:        []byte(jsonData),
 		},
 	)
 }

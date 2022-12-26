@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/eminoz/go-api/broker"
+	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/core/utilities"
 	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/repository"
