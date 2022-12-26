@@ -17,7 +17,7 @@ type userProducer struct{}
 func NewUserProducer() User {
 	return &userProducer{}
 }
-func UserProducer() amqp.Queue {
+func producer() amqp.Queue {
 	ch := Connect()
 	// Declare a queue
 	q, err := ch.QueueDeclare(
@@ -37,7 +37,7 @@ func UserProducer() amqp.Queue {
 func (u userProducer) CreatedUser(user model.User) {
 
 	ch := GetBrokerConnection()
-	q := UserProducer()
+	q := producer()
 
 	jsonData, err := json.Marshal(user)
 

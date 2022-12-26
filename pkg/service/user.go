@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/eminoz/go-api/pkg/broker"
+	"github.com/eminoz/go-api/pkg/cache"
 	"github.com/eminoz/go-api/pkg/core/utilities"
 	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/repository"
@@ -15,12 +16,14 @@ type UserService interface {
 type userService struct {
 	UserRepository repository.UserRepository
 	UserBroker     broker.User
+	UserCache      cache.UserCache
 }
 
-func NewUserService(u repository.UserRepository, b broker.User) UserService {
+func NewUserService(u repository.UserRepository, b broker.User, c cache.UserCache) UserService {
 	return &userService{
 		UserRepository: u,
 		UserBroker:     b,
+		UserCache:      c,
 	}
 }
 func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError) {
@@ -28,6 +31,7 @@ func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData,
 	ctx.BodyParser(user)
 	u.UserBroker.CreatedUser(*user)
 	responseUser := u.UserRepository.CreateUser(user)
+	u.UserCache.SaveUserEmailByID(responseUser.ID.Hex(), responseUser.Email)
 	return utilities.SuccessDataResult("user created", responseUser), nil
 
 }

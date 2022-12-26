@@ -8,7 +8,7 @@ type UserRouter struct {
 
 func (u UserRouter) UserRouters() {
 	di := base{}
-	var user = di.UserDI()
+	var user = di.UserDI() //in tis function user dependencies are injected
 	u.Route.Post("/create", user.CreateUser)
 	u.Route.Get("/getUser/:id", user.GetUser)
 }
