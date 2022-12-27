@@ -29,9 +29,9 @@ func NewUserService(u repository.UserRepository, b broker.User, c cache.UserCach
 func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError) {
 	user := new(model.User)
 	ctx.BodyParser(user)
-	u.UserBroker.CreatedUser(*user)
+	u.UserBroker.CreatedUser(*user) //send user to createUser queue
 	responseUser := u.UserRepository.CreateUser(user)
-	u.UserCache.SaveUserEmailByID(responseUser.ID.Hex(), responseUser.Email)
+	u.UserCache.SaveUserEmailByID(responseUser.ID.Hex(), responseUser.Email) //save user email by id in redis
 	return utilities.SuccessDataResult("user created", responseUser), nil
 
 }

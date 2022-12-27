@@ -7,7 +7,6 @@ import (
 func SetUp() *fiber.App {
 	f := fiber.New()
 	user := f.Group("/user")
-	a := UserRouter{Route: user}
-	a.UserRouters()
+	NewUserRouter(user).UserRouters()
 	return f
 }

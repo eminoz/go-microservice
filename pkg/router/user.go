@@ -6,6 +6,11 @@ type UserRouter struct {
 	Route fiber.Router
 }
 
+func NewUserRouter(r fiber.Router) *UserRouter {
+	return &UserRouter{
+		Route: r,
+	}
+}
 func (u UserRouter) UserRouters() {
 	di := base{}
 	var user = di.UserDI() //in tis function user dependencies are injected
