@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/eminoz/go-api/pkg/config"
@@ -29,7 +28,6 @@ func (a Auth) GenerateJWT(email string, role string) (string, error) {
 
 	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
-		fmt.Errorf(err.Error())
 		return "", err
 	}
 	return tokenString, nil

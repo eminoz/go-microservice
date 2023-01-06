@@ -12,6 +12,10 @@ type Encryption interface {
 type UserEncryption struct {
 }
 
+func NewUserEncription() Encryption {
+	return &UserEncryption{}
+}
+
 func (e UserEncryption) GenerateHashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
