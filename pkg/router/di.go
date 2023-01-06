@@ -22,3 +22,9 @@ func (b base) UserDI() api.UserApi {
 	a := api.NewUserApi(s)
 	return a
 }
+func (b base) ProductDI() api.ProductApi {
+	p := repository.ProductCollectionSetting()
+	s := service.NewProductService(p)
+	a := api.NewProductApi(s)
+	return a
+}

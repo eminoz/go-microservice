@@ -13,6 +13,8 @@ func NewProductRouter(r fiber.Router) *ProductRouter {
 }
 
 func (p ProductRouter) ProductRouters() {
+	di := base{}
+	productDi := di.ProductDI()
 	r := p.Router
-	r.Post("/create")
+	r.Post("/create", productDi.CreatedProduct)
 }

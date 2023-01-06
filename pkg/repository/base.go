@@ -9,11 +9,24 @@ type UserCollection struct {
 	DB *mongo.Database
 	Cl *mongo.Collection
 }
+type ProductCollection struct {
+	DB *mongo.Database
+	Cl *mongo.Collection
+}
+
+var database = db.GetDatabase()
 
 func UserCollectionSetting() *UserCollection {
-	db := db.GetDatabase()
+
 	return &UserCollection{
-		DB: db,
-		Cl: db.Collection("user"),
+		DB: database,
+		Cl: database.Collection("user"),
+	}
+}
+
+func ProductCollectionSetting() *ProductCollection {
+	return &ProductCollection{
+		DB: database,
+		Cl: database.Collection("product"),
 	}
 }
