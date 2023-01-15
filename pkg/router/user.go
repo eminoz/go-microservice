@@ -16,4 +16,5 @@ func (u UserRouter) UserRouters() {
 	var user = di.UserDI() //in tis function user dependencies are injected
 	u.Route.Post("/create", user.CreateUser)
 	u.Route.Get("/getUser/:id", user.GetUser)
+	u.Route.Get("/deleteUser/:id", user.DeleteUserById)
 }

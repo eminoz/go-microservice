@@ -11,8 +11,19 @@ import (
 type UserRepository interface {
 	CreateUser(user *model.User) model.UserDto
 	GetUserByID(id string) model.UserDto
+	DeleteUserById(id string) string
 }
 
+func (u UserCollection) DeleteUserById(id string) string {
+	var ctx context.Context
+	userId, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.D{{Key: "_id", Value: userId}}
+	deleteOne, _ := u.Cl.DeleteOne(ctx, filter)
+	if deleteOne.DeletedCount == 1 {
+		return "user delete succesfuly"
+	}
+	return "user did not delete"
+}
 func (u UserCollection) CreateUser(user *model.User) model.UserDto {
 	var ctx context.Context
 	response, err := u.Cl.InsertOne(ctx, user)

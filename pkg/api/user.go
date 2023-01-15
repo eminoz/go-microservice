@@ -8,6 +8,7 @@ import (
 type UserApi interface {
 	CreateUser(ctx *fiber.Ctx) error
 	GetUser(ctx *fiber.Ctx) error
+	DeleteUserById(ctx *fiber.Ctx) error
 }
 type userApi struct {
 	UserService service.UserService
@@ -29,4 +30,9 @@ func (u userApi) CreateUser(ctx *fiber.Ctx) error {
 func (u userApi) GetUser(ctx *fiber.Ctx) error {
 	user, _ := u.UserService.GetUser(ctx)
 	return ctx.JSON(user)
+}
+func (u userApi) DeleteUserById(ctx *fiber.Ctx) error {
+	deletedUser := u.UserService.DeleteUserById(ctx)
+	return ctx.JSON(deletedUser)
+
 }
