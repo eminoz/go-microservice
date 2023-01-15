@@ -1,21 +1,25 @@
 package jwt
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/eminoz/go-api/pkg/config"
 	"github.com/golang-jwt/jwt"
 )
 
-type IToken interface {
+type AuthJwt interface {
 	GenerateJWT(email string, role string) (string, error)
 }
 
 //go:generate mockgen -destination=../mocks/Auth/mockUserAuth.go -package=jwt  github.com/eminoz/go-advanced-microservice/security/jwt IToken
 
-type Auth struct{}
+type authJwt struct{}
 
-func (a Auth) GenerateJWT(email string, role string) (string, error) {
+func NewAuthJwt() AuthJwt {
+	return &authJwt{}
+}
+func (a authJwt) GenerateJWT(email string, role string) (string, error) {
 	secretKey := config.GetConfig().AppSecret
 	var mySigningKey = []byte(secretKey)
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -30,5 +34,6 @@ func (a Auth) GenerateJWT(email string, role string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Print(tokenString)
 	return tokenString, nil
 }

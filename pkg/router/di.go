@@ -6,6 +6,7 @@ import (
 	"github.com/eminoz/go-api/pkg/cache"
 	"github.com/eminoz/go-api/pkg/repository"
 	"github.com/eminoz/go-api/pkg/security/encryption"
+	"github.com/eminoz/go-api/pkg/security/jwt"
 	"github.com/eminoz/go-api/pkg/service"
 )
 
@@ -17,8 +18,9 @@ var userbroker = broker.NewUserProducer()
 func (b base) UserDI() api.UserApi {
 	encryption := encryption.NewUserEncription()
 	userCache := cache.NewUserCache(redis) //create user redis client
+	authJwt := jwt.NewAuthJwt()
 	r := repository.UserCollectionSetting()
-	s := service.NewUserService(r, userbroker, userCache, encryption)
+	s := service.NewUserService(r, userbroker, userCache, encryption, authJwt)
 	a := api.NewUserApi(s)
 	return a
 }

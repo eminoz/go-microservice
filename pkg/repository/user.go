@@ -12,6 +12,7 @@ type UserRepository interface {
 	CreateUser(user *model.User) model.UserDto
 	GetUserByID(id string) model.UserDto
 	DeleteUserById(id string) string
+	GetUserByEmailForAuth(email string) model.User
 }
 
 func (u UserCollection) DeleteUserById(id string) string {
@@ -45,4 +46,11 @@ func (u UserCollection) GetUserByID(id string) model.UserDto {
 	var userDto model.UserDto
 	u.Cl.FindOne(ctx, filter).Decode(&userDto)
 	return userDto
+}
+func (u UserCollection) GetUserByEmailForAuth(email string) model.User {
+	var ctx context.Context
+	filter := bson.D{{Key: "email", Value: email}}
+	var user model.User
+	u.Cl.FindOne(ctx, filter).Decode(&user)
+	return user
 }

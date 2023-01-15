@@ -19,7 +19,7 @@ func UserIsAuth() fiber.Handler {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			if claims["role"] == "user" || claims["role"] == "admin" {
+			if claims["role"] == "user" {
 
 				ctx.Request().Header.Set("Role", "user")
 				ctx.Next()
