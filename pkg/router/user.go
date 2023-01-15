@@ -1,6 +1,9 @@
 package router
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/eminoz/go-api/pkg/middleware/validation"
+	"github.com/gofiber/fiber/v2"
+)
 
 type UserRouter struct {
 	Route fiber.Router
@@ -14,7 +17,8 @@ func NewUserRouter(r fiber.Router) *UserRouter {
 func (u UserRouter) UserRouters() {
 	di := base{}
 	var user = di.UserDI() //in tis function user dependencies are injected
-	u.Route.Post("/create", user.CreateUser)
+	u.Route.Post("/create", validation.UserValidation(), user.CreateUser)
 	u.Route.Get("/getUser/:id", user.GetUser)
-	u.Route.Get("/deleteUser/:id", user.DeleteUserById)
+	u.Route.Delete("/deleteUser/:id", user.DeleteUserById)
+	u.Route.Post("/updateUser/:id", user.UpdateUserById)
 }

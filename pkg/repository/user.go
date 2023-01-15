@@ -13,6 +13,7 @@ type UserRepository interface {
 	GetUserByID(id string) model.UserDto
 	DeleteUserById(id string) string
 	GetUserByEmailForAuth(email string) model.User
+	UpdateUserById(id string, user model.User) (bool, string)
 }
 
 func (u UserCollection) DeleteUserById(id string) string {
@@ -53,4 +54,16 @@ func (u UserCollection) GetUserByEmailForAuth(email string) model.User {
 	var user model.User
 	u.Cl.FindOne(ctx, filter).Decode(&user)
 	return user
+}
+func (u UserCollection) UpdateUserById(id string, user model.User) (bool, string) {
+	var ctx context.Context
+	userID, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.D{{Key: "_id", Value: userID}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "name", Value: user.Name}}}}
+	updateOne, _ := u.Cl.UpdateOne(ctx, filter, update)
+	print(updateOne.ModifiedCount)
+	if updateOne.ModifiedCount > 0 {
+		return true, "user updated"
+	}
+	return false, "user did not updated"
 }

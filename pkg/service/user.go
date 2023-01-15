@@ -16,6 +16,7 @@ type UserService interface {
 	CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
 	GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
 	DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
+	UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -66,4 +67,13 @@ func (u userService) DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess {
 	userID := ctx.Params("id")
 	deletedUser := u.UserRepository.DeleteUserById(userID)
 	return utilities.SuccessResult(deletedUser)
+}
+func (u userService) UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess {
+	userID := ctx.Params("id")
+	user := new(model.User)
+
+	ctx.BodyParser(&user)
+
+	_, msg := u.UserRepository.UpdateUserById(userID, *user)
+	return utilities.SuccessResult(msg)
 }
