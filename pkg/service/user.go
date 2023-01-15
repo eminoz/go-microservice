@@ -49,7 +49,7 @@ func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utiliti
 	}
 	user.Password = bycripted //give user model the bycripted password
 	responseUser := u.UserRepository.CreateUser(user)
-	token, _ := u.createToken(ctx, user.Email, user.Password)
+	token, _ := u.Authentication.CreateToken(user.Email, user.Password)
 
 	u.UserCache.SaveUserEmailByID(responseUser.ID.Hex(), responseUser.Email) //save user email by id in redis
 
@@ -66,23 +66,4 @@ func (u userService) DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess {
 	userID := ctx.Params("id")
 	deletedUser := u.UserRepository.DeleteUserById(userID)
 	return utilities.SuccessResult(deletedUser)
-}
-func (u userService) createToken(ctx *fiber.Ctx, email string, password string) (model.Token, *utilities.ResultError) {
-	user := u.UserRepository.GetUserByEmailForAuth(email)
-
-	// checkPasswordHash := u.Encryption.CheckPasswordHash(password, user.Password)
-	// if !checkPasswordHash {
-	// 	return model.Token{}, utilities.ErrorResult("password is incorrect")
-	// }
-	generateJWT, err := u.Authentication.GenerateJWT(user.Email, user.Role)
-
-	if err != nil {
-		return model.Token{}, utilities.ErrorResult("did not generate token")
-	}
-	var token model.Token
-	token.Email = user.Email
-	token.Role = user.Role
-	token.ID = user.ID
-	token.TokenString = generateJWT
-	return token, nil
 }

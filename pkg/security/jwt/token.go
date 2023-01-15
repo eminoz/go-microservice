@@ -1,23 +1,30 @@
 package jwt
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/eminoz/go-api/pkg/config"
+	"github.com/eminoz/go-api/pkg/core/utilities"
+	"github.com/eminoz/go-api/pkg/model"
+	"github.com/eminoz/go-api/pkg/repository"
 	"github.com/golang-jwt/jwt"
 )
 
 type AuthJwt interface {
 	GenerateJWT(email string, role string) (string, error)
+	CreateToken(email string, password string) (model.Token, *utilities.ResultError)
 }
 
 //go:generate mockgen -destination=../mocks/Auth/mockUserAuth.go -package=jwt  github.com/eminoz/go-advanced-microservice/security/jwt IToken
 
-type authJwt struct{}
+type authJwt struct {
+	UserRepository repository.UserRepository
+}
 
-func NewAuthJwt() AuthJwt {
-	return &authJwt{}
+func NewAuthJwt(UserRepository repository.UserRepository) AuthJwt {
+	return &authJwt{
+		UserRepository: UserRepository,
+	}
 }
 func (a authJwt) GenerateJWT(email string, role string) (string, error) {
 	secretKey := config.GetConfig().AppSecret
@@ -34,6 +41,24 @@ func (a authJwt) GenerateJWT(email string, role string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Print(tokenString)
 	return tokenString, nil
+}
+func (a authJwt) CreateToken(email string, password string) (model.Token, *utilities.ResultError) {
+	user := a.UserRepository.GetUserByEmailForAuth(email)
+
+	// checkPasswordHash := u.Encryption.CheckPasswordHash(password, user.Password)
+	// if !checkPasswordHash {
+	// 	return model.Token{}, utilities.ErrorResult("password is incorrect")
+	// }
+	generateJWT, err := a.GenerateJWT(user.Email, user.Role)
+
+	if err != nil {
+		return model.Token{}, utilities.ErrorResult("did not generate token")
+	}
+	var token model.Token
+	token.Email = user.Email
+	token.Role = user.Role
+	token.ID = user.ID
+	token.TokenString = generateJWT
+	return token, nil
 }

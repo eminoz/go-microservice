@@ -18,8 +18,8 @@ var userbroker = broker.NewUserProducer()
 func (b base) UserDI() api.UserApi {
 	encryption := encryption.NewUserEncription()
 	userCache := cache.NewUserCache(redis) //create user redis client
-	authJwt := jwt.NewAuthJwt()
 	r := repository.UserCollectionSetting()
+	authJwt := jwt.NewAuthJwt(r)
 	s := service.NewUserService(r, userbroker, userCache, encryption, authJwt)
 	a := api.NewUserApi(s)
 	return a
