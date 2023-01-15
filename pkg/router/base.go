@@ -9,7 +9,7 @@ func SetUp() *fiber.App {
 	user := f.Group("/user")
 	NewUserRouter(user).UserRouters()
 
-	product := f.Group("/prduct")
+	product := f.Group("/product")
 	NewProductRouter(product).ProductRouters()
 	return f
 }

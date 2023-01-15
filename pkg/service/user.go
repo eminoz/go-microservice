@@ -11,8 +11,8 @@ import (
 )
 
 type UserService interface {
-	CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError)
-	GetUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError)
+	CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
+	GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -29,7 +29,7 @@ func NewUserService(u repository.UserRepository, b broker.User, c cache.UserCach
 		Encryption:     e,
 	}
 }
-func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError) {
+func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError) {
 	user := new(model.User)
 	ctx.BodyParser(user)
 	u.UserBroker.CreatedUser(*user) //send user to createUser queue
@@ -43,7 +43,7 @@ func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData,
 	return utilities.SuccessDataResult("user created", responseUser), nil
 
 }
-func (u userService) GetUser(ctx *fiber.Ctx) (*utilities.ResultOfSuccessData, *utilities.ResultError) {
+func (u userService) GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError) {
 	userId := ctx.Params("id")
 	user := u.UserRepository.GetUserByID(userId)
 	return utilities.SuccessDataResult("user", user), nil

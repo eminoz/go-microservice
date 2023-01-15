@@ -8,7 +8,7 @@ import (
 )
 
 type ProductService interface {
-	CreateProduct(ctx *fiber.Ctx) *utilities.ResultOfSuccessData
+	CreateProduct(ctx *fiber.Ctx) *utilities.DataResult
 }
 type productService struct {
 	ProductRepository repository.ProductRepository
@@ -19,10 +19,11 @@ func NewProductService(p repository.ProductRepository) ProductService {
 		ProductRepository: p,
 	}
 }
-func (p productService) CreateProduct(ctx *fiber.Ctx) *utilities.ResultOfSuccessData {
+func (p productService) CreateProduct(ctx *fiber.Ctx) *utilities.DataResult {
 	product := new(model.Product)
 	ctx.BodyParser(product)
 
 	createdProduct := p.ProductRepository.CreateProduct(*product)
+
 	return utilities.SuccessDataResult("product Created", createdProduct)
 }

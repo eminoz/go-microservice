@@ -7,38 +7,28 @@ type Result struct {
 
 type DataResult struct {
 	Result
-	Data interface{}
-}
-type ResultOfSuccessData struct {
-	DataResult
-	Success bool `default:"true"`
+	Data    interface{}
+	Success bool
 }
 
-func SuccessDataResult(msg string, d interface{}) *ResultOfSuccessData {
-	return &ResultOfSuccessData{
-		DataResult: DataResult{
-			Result: Result{
-				Message: msg,
-			},
-			Data: d,
+func SuccessDataResult(msg string, d interface{}) *DataResult {
+	return &DataResult{
+		Result: Result{
+			Message: msg,
 		},
+		Data:    d,
 		Success: true,
 	}
 }
 
-type ResultOfErrorData struct {
-	DataResult
-	Success bool
-}
+func ErrorDataResult(msg string, d interface{}) *DataResult {
+	return &DataResult{
 
-func ErrorDataResult(msg string, d interface{}) *ResultOfErrorData {
-	return &ResultOfErrorData{
-		DataResult: DataResult{
-			Result: Result{
-				Message: msg,
-			},
-			Data: d,
+		Result: Result{
+			Message: msg,
 		},
+		Data: d,
+
 		Success: false,
 	}
 }
