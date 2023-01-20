@@ -11,6 +11,7 @@ type UserApi interface {
 	DeleteUserById(ctx *fiber.Ctx) error
 	UpdateUserById(ctx *fiber.Ctx) error
 	GetAllUser(ctx *fiber.Ctx) error
+	SignIn(ctx *fiber.Ctx) error
 }
 type userApi struct {
 	UserService service.UserService
@@ -52,4 +53,11 @@ func (u userApi) GetAllUser(ctx *fiber.Ctx) error {
 	allUsers := u.UserService.GetAllUser()
 
 	return ctx.JSON(allUsers)
+}
+func (u userApi) SignIn(ctx *fiber.Ctx) error {
+	user, err := u.UserService.SignIn(ctx)
+	if err != nil {
+		return ctx.JSON(err)
+	}
+	return ctx.JSON(user)
 }

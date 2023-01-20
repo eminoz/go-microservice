@@ -3,7 +3,6 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/eminoz/go-api/pkg/model"
 	"github.com/go-redis/redis/v8"
@@ -34,8 +33,7 @@ func NewUserCache(r *redis.Client) UserCache {
 func (u userCache) SaveUserByID(id string, user model.UserDto) {
 	ctx := context.Background()
 	marshaledUser, _ := json.Marshal(user)
-	r := u.Redis.HSet(ctx, "userInfos", id, marshaledUser)
-	fmt.Print(r.Result())
+	u.Redis.HSet(ctx, "userInfos", id, marshaledUser)
 
 }
 func (u userCache) GetUSerById(id string) model.UserDto {

@@ -16,6 +16,14 @@ services:
       - ./database-data:/data/db
 
     # Mongo Express Service
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=eminoz
+      - RABBITMQ_DEFAULT_PASS=eminoz
   mongo-express:
     image: mongo-express:latest # latest image
     container_name: mongo-express

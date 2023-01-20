@@ -18,6 +18,7 @@ type UserService interface {
 	DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
 	UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
 	GetAllUser() *utilities.DataResult
+	SignIn(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.DataResult)
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -57,6 +58,17 @@ func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utiliti
 	u.UserCache.SaveUserByID(responseUser.ID.Hex(), responseUser) //save user email by id in redis
 	return utilities.SuccessDataResult("user created", userDto), nil
 
+}
+func (u userService) SignIn(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.DataResult) {
+	auth := new(model.Authentication)
+	ctx.BodyParser(auth)
+	token, err := u.Authentication.CreateToken(auth.Email, auth.Password)
+	if err != nil {
+		return nil, utilities.ErrorDataResult("not auth", err)
+	}
+	responseUser := u.UserRepository.GetUserByEmail(auth.Email)
+	userDto := model.AuthDto{UserDto: responseUser, Token: token.TokenString}
+	return utilities.SuccessDataResult("auth successfuly", userDto), nil
 }
 func (u userService) GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError) {
 	userId := ctx.Params("id")

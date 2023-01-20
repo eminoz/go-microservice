@@ -18,6 +18,10 @@ type AuthDto struct {
 	UserDto
 	Token string `json:"token"`
 }
+type Authentication struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
 type Token struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`

@@ -15,6 +15,7 @@ type UserRepository interface {
 	GetUserByEmailForAuth(email string) model.User
 	UpdateUserById(id string, user model.User) (bool, string)
 	GetAllUser() []model.UserDto
+	GetUserByEmail(email string) model.UserDto
 }
 
 func (u UserCollection) DeleteUserById(id string) string {
@@ -75,4 +76,12 @@ func (u UserCollection) UpdateUserById(id string, user model.User) (bool, string
 		return true, "user updated"
 	}
 	return false, "user did not updated"
+}
+func (u UserCollection) GetUserByEmail(email string) model.UserDto {
+	var user model.UserDto
+	var ctx context.Context
+	filter := bson.D{{Key: "email", Value: email}}
+	responseUser := u.Cl.FindOne(ctx, filter)
+	responseUser.Decode(&user)
+	return user
 }
