@@ -21,4 +21,5 @@ func (u UserRouter) UserRouters() {
 	u.Route.Get("/getUser/:id", user.GetUser)
 	u.Route.Delete("/deleteUser/:id", user.DeleteUserById)
 	u.Route.Post("/updateUser/:id", user.UpdateUserById)
+	u.Route.Get("/getAllUser", user.GetAllUser)
 }

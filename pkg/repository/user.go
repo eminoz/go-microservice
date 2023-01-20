@@ -14,6 +14,7 @@ type UserRepository interface {
 	DeleteUserById(id string) string
 	GetUserByEmailForAuth(email string) model.User
 	UpdateUserById(id string, user model.User) (bool, string)
+	GetAllUser() []model.UserDto
 }
 
 func (u UserCollection) DeleteUserById(id string) string {
@@ -25,6 +26,14 @@ func (u UserCollection) DeleteUserById(id string) string {
 		return "user delete succesfuly"
 	}
 	return "user did not delete"
+}
+func (u UserCollection) GetAllUser() []model.UserDto {
+	var ctx context.Context
+	filter := bson.D{}
+	find, _ := u.Cl.Find(ctx, filter)
+	var user []model.UserDto
+	find.All(ctx, &user)
+	return user
 }
 func (u UserCollection) CreateUser(user *model.User) model.UserDto {
 	var ctx context.Context

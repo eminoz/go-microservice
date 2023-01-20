@@ -17,6 +17,7 @@ type UserService interface {
 	GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
 	DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
 	UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
+	GetAllUser() *utilities.DataResult
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -76,4 +77,8 @@ func (u userService) UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess {
 
 	_, msg := u.UserRepository.UpdateUserById(userID, *user)
 	return utilities.SuccessResult(msg)
+}
+func (u userService) GetAllUser() *utilities.DataResult {
+	allUsers := u.UserRepository.GetAllUser()
+	return utilities.SuccessDataResult("all user", allUsers)
 }
