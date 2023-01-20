@@ -17,8 +17,9 @@ func UserIsAuth() fiber.Handler {
 		if err != nil {
 			ctx.JSON(*utilities.ErrorResult("Your Token has been expired"))
 		}
-
+		fmt.Print(token.Claims.(jwt.MapClaims))
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			fmt.Print(claims["role"])
 			if claims["role"] == "user" {
 
 				ctx.Request().Header.Set("Role", "user")
@@ -26,7 +27,7 @@ func UserIsAuth() fiber.Handler {
 
 			}
 		}
-		return nil
+		return ctx.JSON(*utilities.ErrorResult("you do not have permission to access"))
 	}
 }
 func AdminIsAuth() fiber.Handler {
@@ -45,7 +46,7 @@ func AdminIsAuth() fiber.Handler {
 
 			}
 		}
-		return nil
+		return ctx.JSON(*utilities.ErrorResult("you do not have permission to access"))
 	}
 }
 
