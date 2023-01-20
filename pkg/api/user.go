@@ -30,8 +30,13 @@ func (u userApi) CreateUser(ctx *fiber.Ctx) error {
 	return ctx.JSON(response)
 }
 func (u userApi) GetUser(ctx *fiber.Ctx) error {
-	user, _ := u.UserService.GetUser(ctx)
+
+	user, err := u.UserService.GetUser(ctx)
+	if err != nil {
+		return ctx.JSON(err)
+	}
 	return ctx.JSON(user)
+
 }
 func (u userApi) DeleteUserById(ctx *fiber.Ctx) error {
 	deletedUser := u.UserService.DeleteUserById(ctx)
