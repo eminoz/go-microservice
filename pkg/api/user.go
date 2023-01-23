@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,15 +25,17 @@ func NewUserApi(s service.UserService) UserApi {
 }
 
 func (u userApi) CreateUser(ctx *fiber.Ctx) error {
-	response, err := u.UserService.CreateUser(ctx)
+	user := new(model.User)
+	ctx.BodyParser(user)
+	response, err := u.UserService.CreateUser(user)
 	if err != nil {
 		return ctx.JSON(err)
 	}
 	return ctx.JSON(response)
 }
 func (u userApi) GetUser(ctx *fiber.Ctx) error {
-
-	user, err := u.UserService.GetUser(ctx)
+	userId := ctx.Params("id")
+	user, err := u.UserService.GetUser(userId)
 	if err != nil {
 		return ctx.JSON(err)
 	}
@@ -40,12 +43,17 @@ func (u userApi) GetUser(ctx *fiber.Ctx) error {
 
 }
 func (u userApi) DeleteUserById(ctx *fiber.Ctx) error {
-	deletedUser := u.UserService.DeleteUserById(ctx)
+	userID := ctx.Params("id")
+	deletedUser := u.UserService.DeleteUserById(userID)
 	return ctx.JSON(deletedUser)
 
 }
 func (u userApi) UpdateUserById(ctx *fiber.Ctx) error {
-	response := u.UserService.UpdateUserById(ctx)
+	userID := ctx.Params("id")
+	user := new(model.User)
+
+	ctx.BodyParser(&user)
+	response := u.UserService.UpdateUserById(userID, user)
 	return ctx.JSON(response)
 }
 func (u userApi) GetAllUser(ctx *fiber.Ctx) error {
@@ -55,7 +63,9 @@ func (u userApi) GetAllUser(ctx *fiber.Ctx) error {
 	return ctx.JSON(allUsers)
 }
 func (u userApi) SignIn(ctx *fiber.Ctx) error {
-	user, err := u.UserService.SignIn(ctx)
+	auth := new(model.Authentication)
+	ctx.BodyParser(auth)
+	user, err := u.UserService.SignIn(auth)
 	if err != nil {
 		return ctx.JSON(err)
 	}

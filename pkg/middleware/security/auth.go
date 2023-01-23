@@ -17,13 +17,10 @@ func UserIsAuth() fiber.Handler {
 		if err != nil {
 			ctx.JSON(*utilities.ErrorResult("Your Token has been expired"))
 		}
-		fmt.Print(token.Claims.(jwt.MapClaims))
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			fmt.Print(claims["role"])
-			if claims["role"] == "user" {
-
+			if claims["role"] == "user" || claims["role"] == "admin" {
 				ctx.Request().Header.Set("Role", "user")
-				ctx.Next()
+				return ctx.Next()
 
 			}
 		}
@@ -42,7 +39,7 @@ func AdminIsAuth() fiber.Handler {
 			if claims["role"] == "admin" {
 
 				ctx.Request().Header.Set("Role", "admin")
-				ctx.Next()
+				return ctx.Next()
 
 			}
 		}

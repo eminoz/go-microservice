@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+
+option go_package = "api/";
+import "google/protobuf/any.proto";
+package apiproto;
+
+service UserService{
+    rpc CreateUser (user) returns (response);
+    rpc GetUser (userID) returns (response);
+    rpc DeleteUserById (userID) returns (response);
+    rpc UpdateUserById (user) returns (response);
+    rpc GetAllUser (Null) returns (response);
+    rpc SignIn (Authentication) returns (response);
+}
+message Null{}
+message user{
+    string Name=1;
+    string Email=2;
+    string Password=3;
+    string Role=4;
+    repeated google.protobuf.Any ID=5;
+}
+
+message userID{
+    string userId=1;
+}
+message Authentication{
+  string Email=1;
+  string Password=2;  
+} 
+message response{
+    repeated google.protobuf.Any res=1; 
+}
+
+
+message Request {
+    int64 a = 1;
+    int64 b = 2;
+}
+
+message Responsex {
+    int64 result = 1;
+}
+
+service AddService {
+    rpc Add(Request) returns (Responsex);
+    rpc Multiply(Request) returns (Responsex);
+}

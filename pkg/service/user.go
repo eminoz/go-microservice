@@ -9,16 +9,15 @@ import (
 	"github.com/eminoz/go-api/pkg/repository"
 	"github.com/eminoz/go-api/pkg/security/encryption"
 	"github.com/eminoz/go-api/pkg/security/jwt"
-	"github.com/gofiber/fiber/v2"
 )
 
 type UserService interface {
-	CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
-	GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError)
-	DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
-	UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess
+	CreateUser(user *model.User) (*utilities.DataResult, *utilities.ResultError)
+	GetUser(userId string) (*utilities.DataResult, *utilities.ResultError)
+	DeleteUserById(userID string) *utilities.ResultSuccess
+	UpdateUserById(userID string, user *model.User) *utilities.ResultSuccess
 	GetAllUser() *utilities.DataResult
-	SignIn(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.DataResult)
+	SignIn(auth *model.Authentication) (*utilities.DataResult, *utilities.DataResult)
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -38,9 +37,8 @@ func NewUserService(u repository.UserRepository, b broker.User, c cache.UserCach
 	}
 }
 
-func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError) {
-	user := new(model.User)
-	ctx.BodyParser(user)
+func (u userService) CreateUser(user *model.User) (*utilities.DataResult, *utilities.ResultError) {
+
 	// userInDB := u.UserRepository.GetUserByEmailForAuth(user.Email)
 	// if userInDB.Email != "" {
 	// 	return nil, utilities.ErrorResult("user already created ")
@@ -59,9 +57,8 @@ func (u userService) CreateUser(ctx *fiber.Ctx) (*utilities.DataResult, *utiliti
 	return utilities.SuccessDataResult("user created", userDto), nil
 
 }
-func (u userService) SignIn(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.DataResult) {
-	auth := new(model.Authentication)
-	ctx.BodyParser(auth)
+func (u userService) SignIn(auth *model.Authentication) (*utilities.DataResult, *utilities.DataResult) {
+
 	token, err := u.Authentication.CreateToken(auth.Email, auth.Password)
 	if err != nil {
 		return nil, utilities.ErrorDataResult("not auth", err)
@@ -70,8 +67,8 @@ func (u userService) SignIn(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.D
 	userDto := model.AuthDto{UserDto: responseUser, Token: token.TokenString}
 	return utilities.SuccessDataResult("auth successfuly", userDto), nil
 }
-func (u userService) GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.ResultError) {
-	userId := ctx.Params("id")
+func (u userService) GetUser(userId string) (*utilities.DataResult, *utilities.ResultError) {
+
 	redisUser := u.UserCache.GetUSerById(userId) //get user from redis
 	if redisUser.Email != "" {
 		return utilities.SuccessDataResult("user from redis", redisUser), nil
@@ -83,17 +80,13 @@ func (u userService) GetUser(ctx *fiber.Ctx) (*utilities.DataResult, *utilities.
 	u.UserCache.SaveUserByID(user.ID.Hex(), user) //save user by id in redis
 	return utilities.SuccessDataResult("user", user), nil
 }
-func (u userService) DeleteUserById(ctx *fiber.Ctx) *utilities.ResultSuccess {
-	userID := ctx.Params("id")
+func (u userService) DeleteUserById(userID string) *utilities.ResultSuccess {
+
 	deletedUser := u.UserRepository.DeleteUserById(userID)
 	u.UserCache.DeleteUserById(userID)
 	return utilities.SuccessResult(deletedUser)
 }
-func (u userService) UpdateUserById(ctx *fiber.Ctx) *utilities.ResultSuccess {
-	userID := ctx.Params("id")
-	user := new(model.User)
-
-	ctx.BodyParser(&user)
+func (u userService) UpdateUserById(userID string, user *model.User) *utilities.ResultSuccess {
 
 	_, msg := u.UserRepository.UpdateUserById(userID, *user)
 	return utilities.SuccessResult(msg)
