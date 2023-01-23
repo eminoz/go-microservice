@@ -7,11 +7,11 @@ type Result struct {
 
 type DataResult struct {
 	Result
-	Data    interface{}
+	Data    any
 	Success bool
 }
 
-func SuccessDataResult(msg string, d interface{}) *DataResult {
+func SuccessDataResult[T any](msg string, d T) *DataResult {
 	return &DataResult{
 		Result: Result{
 			Message: msg,

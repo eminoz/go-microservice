@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/eminoz/go-api/pkg/config"
-	"github.com/eminoz/go-api/pkg/core/utilities"
 	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/repository"
 	"github.com/golang-jwt/jwt"
@@ -12,7 +11,7 @@ import (
 
 type AuthJwt interface {
 	GenerateJWT(email string, role string) (string, error)
-	CreateToken(email string, password string) (model.Token, *utilities.ResultError)
+	CreateToken(email string, password string) (model.Token, error)
 }
 
 //go:generate mockgen -destination=../mocks/Auth/mockUserAuth.go -package=jwt  github.com/eminoz/go-advanced-microservice/security/jwt IToken
@@ -43,7 +42,7 @@ func (a authJwt) GenerateJWT(email string, role string) (string, error) {
 	}
 	return tokenString, nil
 }
-func (a authJwt) CreateToken(email string, password string) (model.Token, *utilities.ResultError) {
+func (a authJwt) CreateToken(email string, password string) (model.Token, error) {
 	user := a.UserRepository.GetUserByEmailForAuth(email)
 
 	// checkPasswordHash := u.Encryption.CheckPasswordHash(password, user.Password)
@@ -53,7 +52,7 @@ func (a authJwt) CreateToken(email string, password string) (model.Token, *utili
 	generateJWT, err := a.GenerateJWT(user.Email, user.Role)
 
 	if err != nil {
-		return model.Token{}, utilities.ErrorResult("did not generate token")
+		return model.Token{}, err
 	}
 	var token model.Token
 	token.Email = user.Email

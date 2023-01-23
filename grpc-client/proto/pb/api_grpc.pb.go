@@ -102,6 +102,7 @@ type UserServiceServer interface {
 	UpdateUserById(context.Context, *User) (*Response, error)
 	GetAllUser(context.Context, *Null) (*Response, error)
 	SignIn(context.Context, *Authentication) (*Response, error)
+	mustEmbedUnimplementedUserServiceServer()
 }
 
 // UnimplementedUserServiceServer must be embedded to have forward compatible implementations.

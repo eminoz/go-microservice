@@ -3,8 +3,6 @@ package service
 import (
 	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/cache"
-	"github.com/eminoz/go-api/pkg/core/utilities"
-
 	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/repository"
 	"github.com/eminoz/go-api/pkg/security/encryption"
@@ -12,12 +10,12 @@ import (
 )
 
 type UserService interface {
-	CreateUser(user *model.User) (*utilities.DataResult, *utilities.ResultError)
-	GetUser(userId string) (*utilities.DataResult, *utilities.ResultError)
-	DeleteUserById(userID string) *utilities.ResultSuccess
-	UpdateUserById(userID string, user *model.User) *utilities.ResultSuccess
-	GetAllUser() *utilities.DataResult
-	SignIn(auth *model.Authentication) (*utilities.DataResult, *utilities.DataResult)
+	CreateUser(user *model.User) (model.AuthDto, error)
+	GetUser(userId string) (model.UserDto, error)
+	DeleteUserById(userID string) string
+	UpdateUserById(userID string, user *model.User) string
+	GetAllUser() []model.UserDto
+	SignIn(auth *model.Authentication) (model.AuthDto, error)
 }
 type userService struct {
 	UserRepository repository.UserRepository
@@ -37,7 +35,7 @@ func NewUserService(u repository.UserRepository, b broker.User, c cache.UserCach
 	}
 }
 
-func (u userService) CreateUser(user *model.User) (*utilities.DataResult, *utilities.ResultError) {
+func (u userService) CreateUser(user *model.User) (model.AuthDto, error) {
 
 	// userInDB := u.UserRepository.GetUserByEmailForAuth(user.Email)
 	// if userInDB.Email != "" {
@@ -46,7 +44,7 @@ func (u userService) CreateUser(user *model.User) (*utilities.DataResult, *utili
 	u.UserBroker.CreatedUser(*user) //send user to createUser queue
 	bycripted, err := u.Encryption.GenerateHashPassword(user.Password)
 	if err != nil {
-		return nil, utilities.ErrorResult("did not encrypted")
+		return model.AuthDto{}, err
 	}
 	user.Password = bycripted //give user model the bycripted password
 	responseUser := u.UserRepository.CreateUser(user)
@@ -54,44 +52,43 @@ func (u userService) CreateUser(user *model.User) (*utilities.DataResult, *utili
 
 	userDto := model.AuthDto{UserDto: responseUser, Token: token.TokenString}
 	u.UserCache.SaveUserByID(responseUser.ID.Hex(), responseUser) //save user email by id in redis
-	return utilities.SuccessDataResult("user created", userDto), nil
-
+	return userDto, nil
 }
-func (u userService) SignIn(auth *model.Authentication) (*utilities.DataResult, *utilities.DataResult) {
+func (u userService) SignIn(auth *model.Authentication) (model.AuthDto, error) {
 
 	token, err := u.Authentication.CreateToken(auth.Email, auth.Password)
 	if err != nil {
-		return nil, utilities.ErrorDataResult("not auth", err)
+		return model.AuthDto{}, err
 	}
 	responseUser := u.UserRepository.GetUserByEmail(auth.Email)
 	userDto := model.AuthDto{UserDto: responseUser, Token: token.TokenString}
-	return utilities.SuccessDataResult("auth successfuly", userDto), nil
+	return userDto, nil
 }
-func (u userService) GetUser(userId string) (*utilities.DataResult, *utilities.ResultError) {
+func (u userService) GetUser(userId string) (model.UserDto, error) {
 
 	redisUser := u.UserCache.GetUSerById(userId) //get user from redis
 	if redisUser.Email != "" {
-		return utilities.SuccessDataResult("user from redis", redisUser), nil
+		return model.UserDto{ID: redisUser.ID, Name: redisUser.Name, Email: redisUser.Email}, nil
 	}
 	user := u.UserRepository.GetUserByID(userId)
 	if user.Email == "" {
-		return nil, utilities.ErrorResult("user does not exist")
+		return model.UserDto{}, nil
 	}
 	u.UserCache.SaveUserByID(user.ID.Hex(), user) //save user by id in redis
-	return utilities.SuccessDataResult("user", user), nil
+	return user, nil
 }
-func (u userService) DeleteUserById(userID string) *utilities.ResultSuccess {
+func (u userService) DeleteUserById(userID string) string {
 
 	deletedUser := u.UserRepository.DeleteUserById(userID)
 	u.UserCache.DeleteUserById(userID)
-	return utilities.SuccessResult(deletedUser)
+	return deletedUser
 }
-func (u userService) UpdateUserById(userID string, user *model.User) *utilities.ResultSuccess {
+func (u userService) UpdateUserById(userID string, user *model.User) string {
 
 	_, msg := u.UserRepository.UpdateUserById(userID, *user)
-	return utilities.SuccessResult(msg)
+	return msg
 }
-func (u userService) GetAllUser() *utilities.DataResult {
+func (u userService) GetAllUser() []model.UserDto {
 	allUsers := u.UserRepository.GetAllUser()
-	return utilities.SuccessDataResult("all user", allUsers)
+	return allUsers
 }
