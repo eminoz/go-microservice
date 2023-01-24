@@ -8,10 +8,10 @@ package apiproto;
 service UserService{
   rpc CreateUser (user) returns (AuthDto);
   rpc GetUser (userID) returns (UserDto);
-  rpc DeleteUserById (userID) returns (response);
-  rpc UpdateUserById (user) returns (response);
-  rpc GetAllUser (Null) returns (response);
-  rpc SignIn (Authentication) returns (response);
+  rpc DeleteUserById (userID) returns (responseMessage);
+  rpc UpdateUserById (user) returns (responseMessage);
+  rpc GetAllUser (Null) returns (responseUsersDto);
+  rpc SignIn (Authentication) returns (AuthDto);
 }
 message Null{}
 message user{
@@ -21,12 +21,17 @@ message user{
   string Role = 4;
   string ID = 5;
 }
-
+message responseMessage{
+  string Message = 1;
+}
 message UserDto{
   string ID = 1;
   string Name = 2;
   string Email = 3;
 
+}
+message responseUsersDto{
+  repeated  UserDto uDto = 1;
 }
 message AuthDto{
   repeated UserDto UserDto = 1;
@@ -34,7 +39,7 @@ message AuthDto{
 }
 
 message Authentication{
-  string Name = 1;
+  string Email = 1;
   string Password = 2;
 }
 message userID{
@@ -47,8 +52,8 @@ message response{
 
 
 message Token{
-  string ID=1;
-  string Role=2;
-  string Email=3;
-  string TokenString=4;
+  string ID = 1;
+  string Role = 2;
+  string Email = 3;
+  string TokenString = 4;
 }

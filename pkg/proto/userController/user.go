@@ -2,6 +2,7 @@ package usercontroller
 
 import (
 	"context"
+	"fmt"
 	"github.com/eminoz/go-api/pkg/model"
 	proto "github.com/eminoz/go-api/pkg/proto/pb"
 	"github.com/eminoz/go-api/pkg/service"
@@ -41,22 +42,50 @@ func (u UserProto) GetUser(ctx context.Context, id *proto.UserID) (*proto.UserDt
 	return &usr, nil
 }
 
-func (u UserProto) DeleteUserById(ctx context.Context, id *proto.UserID) (*proto.Response, error) {
-	//TODO implement me
-	panic("implement me")
+func (u UserProto) DeleteUserById(ctx context.Context, id *proto.UserID) (*proto.ResponseMessage, error) {
+	msg := u.UserProtos.DeleteUserById(id.UserId)
+	return &proto.ResponseMessage{Message: msg}, nil
 }
 
-func (u UserProto) UpdateUserById(ctx context.Context, user *proto.User) (*proto.Response, error) {
-	//TODO implement me
-	panic("implement me")
+func (u UserProto) UpdateUserById(ctx context.Context, user *proto.User) (*proto.ResponseMessage, error) {
+	id := user.ID
+	m := model.User{
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+		Role:     user.Role,
+		ID:       primitive.ObjectID{},
+	}
+	updateUserById := u.UserProtos.UpdateUserById(id, &m)
+	return &proto.ResponseMessage{Message: updateUserById}, nil
 }
+func (u UserProto) GetAllUser(ctx context.Context, null *proto.Null) (*proto.ResponseUsersDto, error) {
+	fmt.Println("user")
 
-func (u UserProto) GetAllUser(ctx context.Context, null *proto.Null) (*proto.Response, error) {
-	//TODO implement me
-	panic("implement me")
+	allUser := u.UserProtos.GetAllUser()
+	usersDto := proto.ResponseUsersDto{}
+	for i, dto := range allUser {
+		usersDto.UDto[i].Email = dto.Email
+		usersDto.UDto[i].Name = dto.Name
+		usersDto.UDto[i].ID = dto.ID.String()
+	}
+	dto := proto.ResponseUsersDto{UDto: usersDto.UDto}
+	return &dto, nil
+
 }
-
-func (u UserProto) SignIn(ctx context.Context, authentication *proto.Authentication) (*proto.Response, error) {
-	//TODO implement me
-	panic("implement me")
+func (u UserProto) SignIn(ctx context.Context, authentication *proto.Authentication) (*proto.AuthDto, error) {
+	auth := model.Authentication{
+		Email:    authentication.Email,
+		Password: authentication.Password,
+	}
+	r, b := u.UserProtos.SignIn(&auth)
+	if b != nil {
+		return nil, b
+	}
+	dtos := []*proto.UserDto{{ID: string(r.ID.String()), Name: r.Name, Email: r.Email}}
+	var a = proto.AuthDto{
+		UserDto: dtos,
+		Token:   r.Token,
+	}
+	return &a, nil
 }

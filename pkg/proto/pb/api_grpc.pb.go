@@ -24,10 +24,10 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*AuthDto, error)
 	GetUser(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*UserDto, error)
-	DeleteUserById(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Response, error)
-	UpdateUserById(ctx context.Context, in *User, opts ...grpc.CallOption) (*Response, error)
-	GetAllUser(ctx context.Context, in *Null, opts ...grpc.CallOption) (*Response, error)
-	SignIn(ctx context.Context, in *Authentication, opts ...grpc.CallOption) (*Response, error)
+	DeleteUserById(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*ResponseMessage, error)
+	UpdateUserById(ctx context.Context, in *User, opts ...grpc.CallOption) (*ResponseMessage, error)
+	GetAllUser(ctx context.Context, in *Null, opts ...grpc.CallOption) (*ResponseUsersDto, error)
+	SignIn(ctx context.Context, in *Authentication, opts ...grpc.CallOption) (*AuthDto, error)
 }
 
 type userServiceClient struct {
@@ -56,8 +56,8 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *UserID, opts ...grp
 	return out, nil
 }
 
-func (c *userServiceClient) DeleteUserById(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *userServiceClient) DeleteUserById(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*ResponseMessage, error) {
+	out := new(ResponseMessage)
 	err := c.cc.Invoke(ctx, "/apiproto.UserService/DeleteUserById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func (c *userServiceClient) DeleteUserById(ctx context.Context, in *UserID, opts
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUserById(ctx context.Context, in *User, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *userServiceClient) UpdateUserById(ctx context.Context, in *User, opts ...grpc.CallOption) (*ResponseMessage, error) {
+	out := new(ResponseMessage)
 	err := c.cc.Invoke(ctx, "/apiproto.UserService/UpdateUserById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -74,8 +74,8 @@ func (c *userServiceClient) UpdateUserById(ctx context.Context, in *User, opts .
 	return out, nil
 }
 
-func (c *userServiceClient) GetAllUser(ctx context.Context, in *Null, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *userServiceClient) GetAllUser(ctx context.Context, in *Null, opts ...grpc.CallOption) (*ResponseUsersDto, error) {
+	out := new(ResponseUsersDto)
 	err := c.cc.Invoke(ctx, "/apiproto.UserService/GetAllUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -83,8 +83,8 @@ func (c *userServiceClient) GetAllUser(ctx context.Context, in *Null, opts ...gr
 	return out, nil
 }
 
-func (c *userServiceClient) SignIn(ctx context.Context, in *Authentication, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *userServiceClient) SignIn(ctx context.Context, in *Authentication, opts ...grpc.CallOption) (*AuthDto, error) {
+	out := new(AuthDto)
 	err := c.cc.Invoke(ctx, "/apiproto.UserService/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -98,10 +98,10 @@ func (c *userServiceClient) SignIn(ctx context.Context, in *Authentication, opts
 type UserServiceServer interface {
 	CreateUser(context.Context, *User) (*AuthDto, error)
 	GetUser(context.Context, *UserID) (*UserDto, error)
-	DeleteUserById(context.Context, *UserID) (*Response, error)
-	UpdateUserById(context.Context, *User) (*Response, error)
-	GetAllUser(context.Context, *Null) (*Response, error)
-	SignIn(context.Context, *Authentication) (*Response, error)
+	DeleteUserById(context.Context, *UserID) (*ResponseMessage, error)
+	UpdateUserById(context.Context, *User) (*ResponseMessage, error)
+	GetAllUser(context.Context, *Null) (*ResponseUsersDto, error)
+	SignIn(context.Context, *Authentication) (*AuthDto, error)
 }
 
 // UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
@@ -114,16 +114,16 @@ func (UnimplementedUserServiceServer) CreateUser(context.Context, *User) (*AuthD
 func (UnimplementedUserServiceServer) GetUser(context.Context, *UserID) (*UserDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) DeleteUserById(context.Context, *UserID) (*Response, error) {
+func (UnimplementedUserServiceServer) DeleteUserById(context.Context, *UserID) (*ResponseMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserById not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUserById(context.Context, *User) (*Response, error) {
+func (UnimplementedUserServiceServer) UpdateUserById(context.Context, *User) (*ResponseMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserById not implemented")
 }
-func (UnimplementedUserServiceServer) GetAllUser(context.Context, *Null) (*Response, error) {
+func (UnimplementedUserServiceServer) GetAllUser(context.Context, *Null) (*ResponseUsersDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUser not implemented")
 }
-func (UnimplementedUserServiceServer) SignIn(context.Context, *Authentication) (*Response, error) {
+func (UnimplementedUserServiceServer) SignIn(context.Context, *Authentication) (*AuthDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}

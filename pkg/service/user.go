@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/cache"
 	"github.com/eminoz/go-api/pkg/model"
@@ -90,5 +91,6 @@ func (u userService) UpdateUserById(userID string, user *model.User) string {
 }
 func (u userService) GetAllUser() []model.UserDto {
 	allUsers := u.UserRepository.GetAllUser()
+	fmt.Println(allUsers)
 	return allUsers
 }

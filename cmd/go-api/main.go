@@ -13,4 +13,9 @@ func main() {
 	db.SetDatabase()
 	broker.Connect()
 	proto.BaseRPC()
+
+	/*
+		f := router.SetUp()
+		f.Listen(":" + config.GetConfig().Port)
+	*/
 }

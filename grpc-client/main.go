@@ -43,5 +43,25 @@ func main() {
 		}
 		return ctx.JSON(a)
 	})
+	app.Get("/getalluser", func(ctx *fiber.Ctx) error {
+		allUser, err2 := client.GetAllUser(context.Background(), nil)
+		if err2 != nil {
+			return ctx.JSON(err2)
+		}
+		return ctx.JSON(allUser)
+	})
+	app.Post("/updateuser/:id", func(ctx *fiber.Ctx) error {
+		m := new(proto.User)
+		ctx.BodyParser(&m)
+		id := ctx.Params("id")
+
+		m.ID = id
+		byId, err2 := client.UpdateUserById(context.Background(), m)
+		if err2 != nil {
+			return ctx.JSON(err2)
+		}
+		return ctx.JSON(byId)
+
+	})
 	log.Fatal(app.Listen(":3000"))
 }
