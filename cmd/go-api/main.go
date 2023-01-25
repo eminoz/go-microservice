@@ -14,8 +14,8 @@ func main() {
 	broker.Connect()
 
 	f := router.SetUp()
-	f.Listen(":" + config.GetConfig().Port)
+	f.Listen(":" + config.GetConfig().Port) // works as Rest Api
 	/*
-		proto.BaseRPC()
+		proto.BaseRPC()  // works as gRPC server
 	*/
 }
