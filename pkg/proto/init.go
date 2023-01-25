@@ -27,12 +27,12 @@ func BaseRPC() {
 	newServer := grpc.NewServer()
 	reflection.Register(newServer)
 	encryption := encryption.NewUserEncription()
-	userCache := cache.NewUserCache(redis) //create user redis client
-	r := repository.UserCollectionSetting()
+	userCache := cache.NewUserCache(redis)  //create user redis client
+	r := repository.UserCollectionSetting() //User Repository
 	authJwt := jwt.NewAuthJwt(r)
 	s := service.NewUserService(r, userbroker, userCache, encryption, authJwt)
-	user := usercontroller.UserProto{UserProtos: s}
-	proto.RegisterUserServiceServer(newServer, &user)
+	u := usercontroller.UserProto{UserProtos: s}
+	proto.RegisterUserServiceServer(newServer, &u)
 
 	err = newServer.Serve(listen)
 	if err != nil {

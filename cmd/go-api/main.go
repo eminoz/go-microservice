@@ -4,7 +4,7 @@ import (
 	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/config"
 	"github.com/eminoz/go-api/pkg/db"
-	"github.com/eminoz/go-api/pkg/proto"
+	"github.com/eminoz/go-api/pkg/router"
 )
 
 func main() {
@@ -12,10 +12,10 @@ func main() {
 	config.SetupConfig()
 	db.SetDatabase()
 	broker.Connect()
-	proto.BaseRPC()
 
+	f := router.SetUp()
+	f.Listen(":" + config.GetConfig().Port)
 	/*
-		f := router.SetUp()
-		f.Listen(":" + config.GetConfig().Port)
+		proto.BaseRPC()
 	*/
 }

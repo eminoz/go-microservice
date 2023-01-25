@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	proto "github.com/eminoz/grpc-deneme/proto/pb"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -26,9 +25,7 @@ func main() {
 
 		user := new(proto.User)
 		ctx.BodyParser(&user)
-		fmt.Println(user)
 		a, b := client.CreateUser(context.Background(), user)
-		fmt.Println(a.UserDto)
 		if b != nil {
 			return ctx.JSON(b)
 		}
@@ -62,6 +59,28 @@ func main() {
 		}
 		return ctx.JSON(byId)
 
+	})
+	app.Delete("/deleteuserbyid/:id", func(ctx *fiber.Ctx) error {
+		userID := ctx.Params("id")
+		id := proto.UserID{UserId: userID}
+
+		byId, err2 := client.DeleteUserById(context.Background(), &id)
+		if err2 != nil {
+			return ctx.JSON(err2)
+		}
+		return ctx.JSON(byId)
+	})
+	app.Post("/signin", func(ctx *fiber.Ctx) error {
+		authentication := proto.Authentication{}
+
+		ctx.BodyParser(&authentication)
+		p := proto.Authentication{Email: authentication.Email, Password: authentication.Password}
+
+		in, err2 := client.SignIn(context.Background(), &p)
+		if err2 != nil {
+			return ctx.JSON(err2)
+		}
+		return ctx.JSON(in)
 	})
 	log.Fatal(app.Listen(":3000"))
 }

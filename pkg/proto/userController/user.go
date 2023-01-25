@@ -2,7 +2,6 @@ package usercontroller
 
 import (
 	"context"
-	"fmt"
 	"github.com/eminoz/go-api/pkg/model"
 	proto "github.com/eminoz/go-api/pkg/proto/pb"
 	"github.com/eminoz/go-api/pkg/service"
@@ -60,7 +59,6 @@ func (u UserProto) UpdateUserById(ctx context.Context, user *proto.User) (*proto
 	return &proto.ResponseMessage{Message: updateUserById}, nil
 }
 func (u UserProto) GetAllUser(ctx context.Context, null *proto.Null) (*proto.ResponseUsersDto, error) {
-	fmt.Println("user")
 
 	allUser := u.UserProtos.GetAllUser()
 	usersDto := proto.ResponseUsersDto{}

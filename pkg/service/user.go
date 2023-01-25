@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/cache"
@@ -45,6 +46,7 @@ func (u userService) CreateUser(user *model.User) (model.AuthDto, error) {
 	u.UserBroker.CreatedUser(*user) //send user to createUser queue
 	bycripted, err := u.Encryption.GenerateHashPassword(user.Password)
 	if err != nil {
+		err := errors.New("could not generate hash code")
 		return model.AuthDto{}, err
 	}
 	user.Password = bycripted //give user model the bycripted password
