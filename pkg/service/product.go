@@ -1,14 +1,12 @@
 package service
 
 import (
-	"github.com/eminoz/go-api/pkg/core/utilities"
 	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/repository"
-	"github.com/gofiber/fiber/v2"
 )
 
 type ProductService interface {
-	CreateProduct(ctx *fiber.Ctx) *utilities.DataResult
+	CreateProduct(product model.Product) model.ProductDto
 }
 type productService struct {
 	ProductRepository repository.ProductRepository
@@ -19,11 +17,9 @@ func NewProductService(p repository.ProductRepository) ProductService {
 		ProductRepository: p,
 	}
 }
-func (p productService) CreateProduct(ctx *fiber.Ctx) *utilities.DataResult {
-	product := new(model.Product)
-	ctx.BodyParser(product)
+func (p productService) CreateProduct(product model.Product) model.ProductDto {
 
-	createdProduct := p.ProductRepository.CreateProduct(*product)
+	createdProduct := p.ProductRepository.CreateProduct(product)
 
-	return utilities.SuccessDataResult("product Created", createdProduct)
+	return createdProduct
 }

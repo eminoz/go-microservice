@@ -2,6 +2,8 @@ package proto
 
 import (
 	"fmt"
+	"net"
+
 	"github.com/eminoz/go-api/pkg/broker"
 	"github.com/eminoz/go-api/pkg/cache"
 	usercontroller "github.com/eminoz/go-api/pkg/proto/userController"
@@ -9,7 +11,6 @@ import (
 	"github.com/eminoz/go-api/pkg/security/encryption"
 	"github.com/eminoz/go-api/pkg/security/jwt"
 	"github.com/eminoz/go-api/pkg/service"
-	"net"
 
 	proto "github.com/eminoz/go-api/pkg/proto/pb"
 	"google.golang.org/grpc"

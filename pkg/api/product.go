@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/eminoz/go-api/pkg/model"
 	"github.com/eminoz/go-api/pkg/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,6 +19,8 @@ func NewProductApi(p service.ProductService) ProductApi {
 	}
 }
 func (p productApi) CreatedProduct(ctx *fiber.Ctx) error {
-	c := p.ProductService.CreateProduct(ctx)
+	product := new(model.Product)
+	ctx.BodyParser(product)
+	c := p.ProductService.CreateProduct(*product)
 	return ctx.JSON(c)
 }
