@@ -23,6 +23,7 @@ func (b base) UserDI() api.UserApi {
 	s := service.NewUserService(r, userbroker, userCache, encryption, authJwt)
 	a := api.NewUserApi(s)
 	return a
+
 }
 func (b base) ProductDI() api.ProductApi {
 	p := repository.ProductCollectionSetting()
