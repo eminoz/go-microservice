@@ -58,3 +58,31 @@ func TestCreateUser(t *testing.T) {
 
 	assert.Equal(t, dto.Email, user.Email)
 }
+func TestSignIn(t *testing.T) {
+	a, b, c, d, e := UserEnvs()
+	id := primitive.NewObjectID()
+	user := model.User{ID: id, Name: "emin", Email: "eminoz@gmail.com", Password: "1234567", Role: "user"}
+	createUserResponse := model.Token{ID: id, Email: user.Email, Role: "user", TokenString: "63e66aa02c0c4925438a4f66"}
+	e.On("CreateToken", user.Email, user.Password).Return(createUserResponse, nil)
+	dto := model.UserDto{ID: id, Name: user.Name, Email: user.Email}
+
+	a.On("GetUserByEmail", user.Email).Return(dto)
+	u := NewUserService(a, b, c, d, e)
+	authmodel := model.Authentication{Email: user.Email, Password: user.Password}
+	responseUser, _ := u.SignIn(&authmodel)
+	assert.Equal(t, responseUser.Email, createUserResponse.Email)
+}
+func TestGetUser(t *testing.T) {
+	a, b, c, d, e := UserEnvs()
+	id := primitive.NewObjectID()
+	user := model.User{ID: id, Name: "emin", Email: "eminoz@gmail.com", Password: "1234567", Role: "user"}
+	userDto := model.UserDto{ID: id, Name: user.Name, Email: user.Email}
+
+	c.On("GetUSerById", id.Hex()).Return(userDto)
+	a.On("GetUserByID", id.Hex()).Return(userDto)
+	c.On("SaveUserByID", id.Hex(), userDto)
+	u := NewUserService(a, b, c, d, e)
+	userRes, _ := u.GetUser(id.Hex())
+	assert.Equal(t, userRes.Email, user.Email)
+
+}

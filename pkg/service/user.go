@@ -41,7 +41,7 @@ func (u userService) CreateUser(user *model.User) (model.AuthDto, error) {
 
 	// userInDB := u.UserRepository.GetUserByEmailForAuth(user.Email)
 	// if userInDB.Email != "" {
-	// 	return nil, utilities.ErrorResult("user already created ")
+	// 	return model.AuthDto{}, nil
 	// }
 	u.UserBroker.CreatedUser(*user) //send user to createUser queue
 	bycripted, err := u.Encryption.GenerateHashPassword(user.Password)
