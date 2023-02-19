@@ -60,17 +60,24 @@ func TestCreateUser(t *testing.T) {
 }
 func TestSignIn(t *testing.T) {
 	a, b, c, d, e := UserEnvs()
+
 	id := primitive.NewObjectID()
-	user := model.User{ID: id, Name: "emin", Email: "eminoz@gmail.com", Password: "1234567", Role: "user"}
+	user := model.User{ID: id, Name: "emin", Email: "eminoz1@gmail.com", Password: "1234567", Role: "user"}
 	createUserResponse := model.Token{ID: id, Email: user.Email, Role: "user", TokenString: "63e66aa02c0c4925438a4f66"}
-	e.On("CreateToken", user.Email, user.Password).Return(createUserResponse, nil)
 	dto := model.UserDto{ID: id, Name: user.Name, Email: user.Email}
+	e.On("CreateToken", user.Email, user.Password).Return(createUserResponse, nil)
 
 	a.On("GetUserByEmail", user.Email).Return(dto)
 	u := NewUserService(a, b, c, d, e)
 	authmodel := model.Authentication{Email: user.Email, Password: user.Password}
 	responseUser, _ := u.SignIn(&authmodel)
 	assert.Equal(t, responseUser.Email, createUserResponse.Email)
+
+	a2, b2, c2, d2, e2 := UserEnvs()
+	a2.On("GetUserByEmail", user.Email).Return(model.UserDto{}, nil)
+	u2 := NewUserService(a2, b2, c2, d2, e2)
+	responseUser2, _ := u2.SignIn(&authmodel)
+	assert.Equal(t, responseUser2.UserDto.Email, "")
 }
 func TestGetUser(t *testing.T) {
 	a, b, c, d, e := UserEnvs()
@@ -84,5 +91,15 @@ func TestGetUser(t *testing.T) {
 	u := NewUserService(a, b, c, d, e)
 	userRes, _ := u.GetUser(id.Hex())
 	assert.Equal(t, userRes.Email, user.Email)
+
+	id2 := primitive.NewObjectID()
+	user2 := model.User{ID: id2, Name: "emin", Email: "eminoz@gmail.com", Password: "1234567", Role: "user"}
+	userDto2 := model.UserDto{ID: id2, Name: user2.Name}
+	c.On("GetUSerById", id.Hex()).Return(userDto2)
+	a.On("GetUserByID", id.Hex()).Return(userDto2)
+	c.On("SaveUserByID", id.Hex(), userDto2)
+	u2 := NewUserService(a, b, c, d, e)
+	userRes2, _ := u2.GetUser(id.Hex())
+	assert.Equal(t, userRes2.Email, user.Email, "got user")
 
 }

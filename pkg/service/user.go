@@ -58,12 +58,15 @@ func (u userService) CreateUser(user *model.User) (model.AuthDto, error) {
 	return userDto, nil
 }
 func (u userService) SignIn(auth *model.Authentication) (model.AuthDto, error) {
-
+	responseUser := u.UserRepository.GetUserByEmail(auth.Email)
+	if responseUser.Email == "" {
+		return model.AuthDto{}, nil
+	}
 	token, err := u.Authentication.CreateToken(auth.Email, auth.Password)
 	if err != nil {
 		return model.AuthDto{}, err
 	}
-	responseUser := u.UserRepository.GetUserByEmail(auth.Email)
+
 	userDto := model.AuthDto{UserDto: responseUser, Token: token.TokenString}
 	return userDto, nil
 }
